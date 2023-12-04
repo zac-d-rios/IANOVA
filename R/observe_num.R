@@ -6,6 +6,8 @@
 #' @param omega Weighting parameter for the radius
 #'
 #' @return The numerator of the test statistic
+#'
+#' @export
 observe_num <- function(sim, omega = 1){
   # Pre-allocate vectors and number of groups
   g <- length(sim)

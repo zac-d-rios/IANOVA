@@ -12,6 +12,8 @@
 #' @param trials Number of observations used to construct distribution
 #'
 #' @return A vector of values that simulate the limiting distribution
+#'
+#' @export
 sim_theory_num <- function(g, corr, dist, params1, params2, omega = 1, trials){
 
   # Set parameters for the normal distribution used in the limiting case

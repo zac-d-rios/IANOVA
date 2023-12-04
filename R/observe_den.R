@@ -6,6 +6,8 @@
 #' @param omega Weighting parameter for the radius
 #'
 #' @return The denominator of the test statistic
+#'
+#' @export
 observe_den <- function(sim, omega = 1){
 
   # Pre-allocate vectors and number of groups

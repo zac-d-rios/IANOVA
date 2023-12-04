@@ -8,6 +8,8 @@
 #' @param omega Weighting parameter for radii
 #'
 #' @return One number, a linear combination of the variances
+#'
+#' @export
 sim_theory_den <- function(dist, params1, params2, omega = 1){
 
   #Get variance parameters depending on distribution

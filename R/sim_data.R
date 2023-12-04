@@ -11,6 +11,10 @@
 #' @param ... Additional parameters to be passed into genCorGen
 #'
 #' @return A list, where each element is the data for a group
+#'
+#' @importFrom simstudy genCorGen
+#'
+#' @export
 sim_data <- function(group_sizes, dist, corr, params1, params2, ...){
   g <- length(group_sizes)
   data <- vector(mode = "list", length = g)
