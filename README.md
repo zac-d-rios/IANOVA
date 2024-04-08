@@ -25,10 +25,10 @@ devtools::install_github("zac-d-rios/IANOVA")
 Example scripts used to generate the figures found in the thesis are
 available in the “scripts” folder. These scripts are by no means
 comprehensive, but provide the framework for using the functions in this
-package. generates correlated data for certain distributions, and
-importantly returns data in the format that other functions will expect.
-Below is an example than generates three groups of 30 intervals, where
-both the center and radii are normally distributed. The center and
+package. *sim_data* generates correlated data for certain distributions,
+and importantly returns data in the format that other functions will
+expect. Below is an example than generates three groups of 30 intervals,
+where both the center and radii are normally distributed. The center and
 radius are correlated, and params1 represents mean parameters, while
 params2 represent variance parameters. The output of the first group of
 intervals is then displayed.
@@ -73,8 +73,9 @@ data[[1]]
 #>     id          V1        V2
 ```
 
-We also can use functions and to get the different pieces of our
-statistic, and divide their outputs to get the full statistic.
+We also can use functions *observe_num* and *observe_den* to get the
+different pieces of our statistic, and divide their outputs to get the
+full statistic.
 
 ``` r
 full_statistic <- observe_num(data)/observe_den(data)
@@ -111,9 +112,19 @@ full_statistic > quantile(limiting_distribution, 0.95)
 In this case, our test statistic did not exceed the critical value of
 our limiting distribution, so we would fail to reject the null. There
 isn’t sufficient evidence to suggest our intervals are different across
-groups, which is in line with how we simulated.
+groups, which is in line with how we simulated the data.
 
 ## General Procedure
 
 In general, IANOVA hypothesis tests will be run using the following
 steps:
+
+1.  Format the data to be a list, where each entry contains the interval
+    data for one group (column 2 is centers, column 3 is radii).
+2.  Get the test statistic from *observe_num* divided by *observe_den*.
+3.  Find the variance of the center and range (may be previously known,
+    assumed, or empirical), as well as the correlation.
+4.  Use these to get the theoretical limiting distribution from
+    *sim_theory_num* divided by *sim_theory_den*.
+5.  Compare your test statistic to the quantile of the limiting
+    distribution appropriate for your significance level.
