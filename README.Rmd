@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of IANOVA is to ...
+IANOVA is a package built for simulating and running IANOVA hypothesis tests. The current functionality is relatively limited, but does allow users to build their own simulations and run full hypothesis tests.
 
 ## Installation
 
@@ -31,25 +31,56 @@ devtools::install_github("zac-d-rios/IANOVA")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+Example scripts used to generate the figures found in the thesis are available in the "scripts" folder. These scripts are by no means comprehensive, but provide the framework for using the functions in this package. \textttt{sim_data} generates correlated data for certain distributions, and importantly returns data in the format that other functions will expect. Below is an example than generates three groups of 30 intervals, where both the center and radii are normally distributed. The center and radius are correlated, and params1 represents mean parameters, while params2 represent variance parameters. The output of the first group of intervals is then displayed.
 
-```{r example}
+```{r sim}
 library(IANOVA)
-## basic example code
+set.seed(90210)
+data <- sim_data(group_sizes = c(30, 30, 30), dist = "normal", corr = 0.8, 
+                 params1 = c(0, 10), params2 = c(1, 2))
+data[[1]]
+
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+We also can use functions \texttt{observe_num} and \textttt{observe_den} to get the different pieces of our statistic, and divide their outputs to get the full statistic.
 
-```{r cars}
-summary(cars)
+```{r observe}
+full_statistic <- observe_num(data)/observe_den(data)
+full_statistic
+```
+This value can then be compared to the theoretical limiting distribution, via two other functions in the package. In general, the arguments for the functions are the same. Trials indicates the number of simulations you'd like to use to generate the numerator, and g is the number of groups, rather than their individual sizes.
+
+```{r limit}
+num_theory <- sim_theory_num(g = 3, dist = "normal", corr = 0.8, 
+                              params1 = c(0, 10), params2 = c(1, 2),
+                              trials = 100000, omega = 0.8)
+
+den_theory <- sim_theory_den(dist = "normal", params1 = c(0, 10),
+                             params2 = c(1, 2), omega = 0.8)
+
+limiting_distribution <- num_theory/den_theory
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
+You can then make a decision by comparing your test statistic with the limiting distribution, shown below.
 
-You can also embed plots, for example:
+``` {r p-val}
+full_statistic > quantile(limiting_distribution, 0.95)
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+
 ```
+In this case, our test statistic did not exceed the critical value of our limiting distribution, so we would fail to reject the null. There isn't sufficient evidence to suggest our intervals are different across groups, which is in line with how we simulated.
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+## General Procedure
+
+In general, IANOVA hypothesis tests will be run using the following steps:
+\begin{enumerate}
+    \item Format the data to be a list, where each entry contains the interval data for one group (column 2 is centers, column 3 is radii).
+    \item Get the test statistic from \texttt{observe\_num} divided by \texttt{observe\_den}.
+    \item Find the variance of the center and range (may be previously known, assumed, or empirical), as well as the correlation.
+    \item Use these to get the theoretical limiting distribution from \texttt{sim\_theory\_num} divided by \\ \texttt{sim\_theory\_den}.
+    \item Compare your test statistic to the quantile of the limiting distribution appropriate for your significance level.
+\end{enumerate}
+
+
+

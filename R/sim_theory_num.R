@@ -13,6 +13,9 @@
 #'
 #' @return A vector of values that simulate the limiting distribution
 #'
+#' @importFrom simstudy genCorGen
+#' @import data.table
+#'
 #' @export
 sim_theory_num <- function(g, corr, dist, params1, params2, omega = 1, trials){
 
