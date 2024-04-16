@@ -3,7 +3,7 @@ Title: Simulate and Run IANOVA Hypothesis Tests
 Version: 0.0.0.9000
 Authors@R: 
     person("Zac", "Rios", ,"zacdrios@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: IANOVA allows users to simulate correlated interval datasets and run IANOVA tests of significance on real data.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
