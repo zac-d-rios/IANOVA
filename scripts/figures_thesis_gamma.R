@@ -40,7 +40,7 @@ for(i in 1:10000){
 hist_data500N <- rep(NA, 10000)
 hist_data500D <- rep(NA, 10000)
 for(i in 1:10000){
-  sim <- sim_data(group_sizes = c(30, 33, 35, 30, 29),
+  sim <- sim_data(group_sizes = c(30, 10, 15, 40, 10),
                   dist = "gamma", corr = 0.5,
                   params1 = c(5, 10), params2 = c(2, 1))
   hist_data500N[i] <- observe_num(sim, omega = 1)
@@ -48,7 +48,7 @@ for(i in 1:10000){
 }
 
 hist_theory <- sim_theory_num(g = 5, dist = "gamma", corr = 0.5,
-                              params1 = c(5, 10), params2 = c(2, 1), trials = 100000, 
+                              params1 = c(5, 10), params2 = c(2, 1), trials = 100000,
                               omega = 1)
 
 num_theory <- as.data.frame(hist_theory)
@@ -83,13 +83,24 @@ df2 <- melted_full %>%
   group_by(variable) %>%
   summarise(quant_95 = quantile(value, 0.95))
 
+hospital_names <- list(
+  'approx_3'="Approximately 3",
+  'approx_8'="Approximately 8",
+  'approx_15'="Approximately 15",
+  'approx_30'="Imbalanced Data"
+)
+
+hospital_labeller <- function(variable,value){
+  return(hospital_names[value])
+}
 
 ggplot(data=melted_full, aes(x=value)) +
-  geom_histogram(aes(y=after_stat(density)), bins = 65, color = "darkblue", fill = "lightblue") +
+  geom_histogram(aes(y=after_stat(density)), bins = 140, color = "darkblue", fill = "lightblue") +
   geom_density(data = limit, aes(x = limit), color="darkred", size = 0.9) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable, labeller = hospital_labeller) +
   theme_bw() +
-  xlim(0, 6) +
+  theme(axis.title.x = element_text(size=20), axis.title.y = element_text(size=16), legend.text = element_text(size=15), legend.title = element_text(size=15), legend.position = c(0.99,0.995), legend.justification = c(1,1), strip.text=element_text(size=12)) +
+  coord_cartesian(xlim = c(0, 6)) +
   geom_vline(data = df2, mapping = aes(xintercept = quant_95, color = "Data"), linetype="dashed") +
   geom_vline(data = limit, mapping = aes(xintercept = quantile(limit, 0.95), color = "Limit"), linetype="solid") +
   scale_color_manual(name = "95th Quantile", values = c(Data = "blue", Limit = "red"))
